@@ -2,6 +2,8 @@
   "dependencies": {
     "@biomejs/biome": "2.4.15",
     "@elysia/openapi": "^1.4.17",
+    "@mastra/core": "^1.82.0",
+    "@mastra/elysia": "^0.1.22",
     "elysia": "latest"
   },
   "devDependencies": {
@@ -11,6 +13,7 @@
   "name": "server",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
+    "fmt": "bunx biome check --write ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "version": "1.0.50"
