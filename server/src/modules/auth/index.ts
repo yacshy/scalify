@@ -1,10 +1,10 @@
-import { Elysia } from "elysia";
+import { Elysia } from 'elysia';
 
 export const userModule = new Elysia({
   detail: {
-    tags: ["Auth"]
+    tags: ['Auth']
   },
-  prefix: "/auth"
+  prefix: '/auth'
 })
-  .get("/login", () => "Login")
-  .get("/register", () => "Register");
+  .get('/login', () => 'Login')
+  .get('/register', () => 'Register');

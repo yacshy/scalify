@@ -44,7 +44,7 @@
       "bracketSameLine": false,
       "expand": "auto",
       "jsxQuoteStyle": "double",
-      "quoteStyle": "double",
+      "quoteStyle": "single",
       "semicolons": "always",
       "trailingCommas": "none"
     },

@@ -1,10 +1,10 @@
-import { openapi } from "@elysia/openapi";
-import { MastraServer } from "@mastra/elysia";
-import { Elysia } from "elysia";
-import { OPENAPI_CONFIG } from "@/configs/openapi.config";
-import { userModule } from "@/modules/auth";
-import { productModule } from "@/modules/product";
-import { mastra } from "./mastra";
+import { openapi } from '@elysia/openapi';
+import { MastraServer } from '@mastra/elysia';
+import { Elysia } from 'elysia';
+import { OPENAPI_CONFIG } from '@/configs/openapi.config';
+import { userModule } from '@/modules/auth';
+import { productModule } from '@/modules/product';
+import { mastra } from './mastra';
 
 const app = new Elysia();
 

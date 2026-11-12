@@ -1,21 +1,21 @@
-import type { ElysiaOpenAPIConfig } from "@elysia/openapi";
+import type { ElysiaOpenAPIConfig } from '@elysia/openapi';
 
-export const OPENAPI_CONFIG: ElysiaOpenAPIConfig<boolean, "/docs"> = {
+export const OPENAPI_CONFIG: ElysiaOpenAPIConfig<boolean, '/docs'> = {
   documentation: {
     info: {
-      title: "scalify",
-      version: "0.0.1"
+      title: 'scalify',
+      version: '0.0.1'
     }
   },
   enabled: true,
-  path: "/docs",
-  provider: "scalar",
+  path: '/docs',
+  provider: 'scalar',
   scalar: {
-    _integration: "elysiajs",
+    _integration: 'elysiajs',
     default: false,
     defaultOpenAllTags: false,
     defaultOpenFirstTag: false,
-    documentDownloadType: "both",
+    documentDownloadType: 'both',
     expandAllModelSections: false,
     expandAllParameters: false,
     expandAllResponses: false,
@@ -27,22 +27,22 @@ export const OPENAPI_CONFIG: ElysiaOpenAPIConfig<boolean, "/docs"> = {
     hideSearch: false,
     hideTestRequestButton: false,
     isEditable: false,
-    layout: "classic",
+    layout: 'classic',
     maxVisibleRequestBodyProperties: 12,
-    modelsSectionLabel: "Models",
-    operationTitleSource: "summary",
+    modelsSectionLabel: 'Models',
+    operationTitleSource: 'summary',
     orderRequiredPropertiesFirst: true,
-    orderSchemaPropertiesBy: "alpha",
+    orderSchemaPropertiesBy: 'alpha',
     persistAuth: false,
     schemaKeyboardNav: false,
-    showDeveloperTools: "localhost",
+    showDeveloperTools: 'localhost',
     showOperationId: false,
     showSidebar: false,
-    showToolbar: "localhost",
-    slug: "scalify-api",
+    showToolbar: 'localhost',
+    slug: 'scalify-api',
     telemetry: true,
-    theme: "elysiajs",
-    title: "scalify",
+    theme: 'elysiajs',
+    title: 'scalify',
     withDefaultFonts: true
   }
 };

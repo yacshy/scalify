@@ -1,8 +1,8 @@
-import { Elysia } from "elysia";
+import { Elysia } from 'elysia';
 
 export const productModule = new Elysia({
   detail: {
-    tags: ["Product"]
+    tags: ['Product']
   },
-  prefix: "/product"
-}).get("/list", () => "Product List");
+  prefix: '/product'
+}).get('/list', () => 'Product List');
