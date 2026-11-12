@@ -54,3 +54,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+## for streaming
+/streaming/target/
