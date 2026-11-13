@@ -375,7 +375,9 @@ fun LoginPageBackgroundPreview() {
     LoginPageBackground(
         content = {
             Box(
-                modifier = Modifier.fillMaxSize().background(Color(0x40FFFFFF))
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x40FFFFFF))
             )
         }
     )
