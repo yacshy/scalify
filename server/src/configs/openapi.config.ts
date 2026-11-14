@@ -1,4 +1,4 @@
-import type { ElysiaOpenAPIConfig } from '@elysia/openapi';
+import type { ElysiaOpenAPIConfig } from '@elysia/openapi'
 
 export const OPENAPI_CONFIG: ElysiaOpenAPIConfig<boolean, '/docs'> = {
   documentation: {
@@ -45,4 +45,4 @@ export const OPENAPI_CONFIG: ElysiaOpenAPIConfig<boolean, '/docs'> = {
     title: 'scalify',
     withDefaultFonts: true
   }
-};
+}

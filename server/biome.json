@@ -45,7 +45,7 @@
       "expand": "auto",
       "jsxQuoteStyle": "double",
       "quoteStyle": "single",
-      "semicolons": "always",
+      "semicolons": "asNeeded",
       "trailingCommas": "none"
     },
     "jsxRuntime": "reactClassic",
