@@ -1,4 +1,4 @@
-package com.example.scalify.ui.components.WorkbenchScreen
+package com.example.scalify.ui.components.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

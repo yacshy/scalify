@@ -48,7 +48,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.Navigator
 import com.example.scalify.R
 import com.example.scalify.ui.components.WorkbenchScreen.RephotoDialog
 import com.example.scalify.ui.navigation.LocalNavController
@@ -211,7 +210,8 @@ fun BottomBar(
                 }
             }
             Row(
-                modifier = Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxHeight(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
                     onClick = {
