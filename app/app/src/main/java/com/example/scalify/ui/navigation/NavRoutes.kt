@@ -16,4 +16,7 @@ sealed class NavRoutes {
     @Serializable
     object ProfilePage : NavRoutes()
 
+    @Serializable
+    object MajorCoursesPage: NavRoutes()
+
 }

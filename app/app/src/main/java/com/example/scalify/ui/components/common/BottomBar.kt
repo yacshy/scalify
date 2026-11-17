@@ -61,6 +61,7 @@ fun ButtomBarGuard() {
     val hideBottomBarRoutes = listOf(
         NavRoutes.LoginPage::class,
         NavRoutes.DetectPage::class,
+        NavRoutes.MajorCoursesPage::class
         // 其他路由...
     )
     val shouldShowBottomBar = currentDestination?.let { destination ->

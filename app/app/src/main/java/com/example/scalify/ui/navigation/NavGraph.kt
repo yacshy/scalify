@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.scalify.ui.screens.DetectPageUI
 import com.example.scalify.ui.screens.LoginPageUI
+import com.example.scalify.ui.screens.MajorCoursesPageUI
 import com.example.scalify.ui.screens.ProfilePageUI
 import com.example.scalify.ui.screens.WorkbenchPageUI
 
@@ -13,11 +14,12 @@ fun NavGraph() {
     val navController = LocalNavController.current
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.ProfilePage
+        startDestination = NavRoutes.MajorCoursesPage
     ) {
         composable<NavRoutes.LoginPage> { LoginPageUI() }
         composable<NavRoutes.WorkbenchPage> { WorkbenchPageUI() }
         composable<NavRoutes.DetectPage> { DetectPageUI() }
         composable<NavRoutes.ProfilePage> { ProfilePageUI() }
+        composable<NavRoutes.MajorCoursesPage> { MajorCoursesPageUI() }
     }
 }
