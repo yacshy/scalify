@@ -1,0 +1,85 @@
+# ============================================================================
+# default.toml — ubuntu-server 实机默认配置（SCALP_PROFILE=server-real）
+#
+# 权威定稿：docs/streaming-plan.md R3；接口契约：docs/API.md。
+# 本文件只描述「控制面」参数。mediamtx.yml / hostapd / dnsmasq / nftables 等
+# 网络与媒体面配置在 deploy/ 与 docs/NETWORK-RUNBOOK.md，由其他成员负责。
+# ============================================================================
+
+profile = "server-real"
+
+[server]
+# 生产绑 AP 侧 IP（docs/API.md §0：Rust 控制面 10.42.0.1:9090）。
+# 注意：Win11 上无 10.42.0.1；config.rs::finalize() 在非 Linux 平台会
+# 强制改绑 127.0.0.1:9090，避免 Win11 绑定失败，也符合「Win11 走 fake」。
+bind_addr = "10.42.0.1:9090"
+
+[capture]
+# MVP 默认 MJPG 1280x720@30。30fps 未经实测（docs/API.md §3），
+# 必须 `v4l2-ctl --list-formats-ext` + `--stream-count=300` 验证；
+# 达不到则退 YUYV 640x480@30 并重算延迟预算。全部为参数化字段，不写死。
+device = "/dev/video0"
+format = "MJPG"
+width = 1280
+height = 720
+fps = 30
+
+[encoder]
+# 硬编优先 vah264enc（Ubuntu 24.04 / GStreamer 1.24.2），
+# 次选 v4l2h264enc，兜底 x264enc。
+name = "vah264enc"
+# 决策 2=A：首版冻结 CBR 目标 2500 kbps（x264enc/vah264enc bitrate 单位 kbps；
+# v4l2h264enc 的 video_bitrate 单位 bps=2500000，由 pipeline.rs 换算）。
+# feedback 路径绝不修改此值、绝不改任何编码器参数。
+bitrate_kbps = 2500
+
+[rtsp]
+# GStreamer rtspclientsink 内部环回一跳，仅本机（docs/API.md §0）。
+url = "rtsp://127.0.0.1:8554/scalp"
+protocols = "tcp"
+
+[mediamtx]
+# Control API 只走 127.0.0.1:9997（docs/API.md §0/§1）。
+# 路径固定 /v3/paths/get/scalp 与 /v3/webrtc/sessions/list，
+# 严禁写成 /v3/webrtcsessions/list。
+control_api_base = "http://127.0.0.1:9997"
+# 对应 mediamtx.yml `api: true`（官方默认 false）；false 时 Rust 跳过真实探流。
+api_enabled = true
+# 外部调用一律设超时：探流 ≤2s（docs/API.md §7 E11），超时不 panic。
+probe_timeout_ms = 2000
+probe_interval_ms = 5000
+
+[network]
+# 以下为 GET /api/v1/config 的脱敏回显值，非 Rust 设置的网络配置本身。
+ap_subnet = "10.42.0.0/24"
+# D1 单网卡：AP 信道由 STA 关联的路由器决定，不可自选；0 = 尚未实测回显。
+ap_channel = 0
+# D4 下发默认网关 + 经 server 转发上网（dnsmasq dhcp-option=3/6 + NAT）。
+default_gateway_advertised = true
+internet_forwarded = true
+# 锁定 v1.21.3，禁用 latest（docs/API.md §9）。
+mediamtx_version = "v1.21.3"
+
+[security]
+# WPA2 口令 / 任何密钥：控制面不需要，且 GET /api/v1/config 绝不回显。
+# config.rs 用 Secret 新类型包住，Debug 只打印 "***"，不进任何日志/响应。
+wpa2_passphrase = ""
+
+[logging]
+# feedback 与 server 侧事件写同一份 JSONL，同名同字段（trace_id/stage/
+# sample_id/session_seq/ts），供 P50/P95 四档归因（docs/API.md §8）。
+jsonl_path = "logs/scalp.jsonl"
+
+[pipeline]
+# true：允许 spawn gst-launch-1.0 子进程（仅 Linux 生产路径）。
+# config.rs::finalize() 在 Win11 / 非 Linux 平台强制置 false，
+# 保证「不要在 Win11 上真的执行 v4l2 / hostapd / GStreamer」。
+spawn_processes = true
+
+[watchdog]
+# 控制面 start/stop 零自动重试（docs/API.md §7）。看门狗首版只做
+# 状态迁移 + 结构化日志上报 5001/5002，不自动重启管道；进程自愈由
+# systemd Restart=always（deploy/，其他成员负责）。默认关闭自动重启。
+auto_restart = false
+# 连续掉线达到该次数后，state 从 reconnecting 迁到 failed。
+failure_threshold = 3
