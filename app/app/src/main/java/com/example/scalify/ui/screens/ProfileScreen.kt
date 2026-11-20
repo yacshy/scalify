@@ -53,10 +53,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.scalify.R
 import com.example.scalify.ui.components.common.Copyright
 import com.example.scalify.ui.components.common.QuickAccess
 import com.example.scalify.ui.components.common.StepTitle
+import com.example.scalify.ui.navigation.LocalNavController
+import com.example.scalify.ui.navigation.NavRoutes
 import com.example.scalify.ui.uitls.rememberHapticClick
 import kotlin.math.abs
 import kotlin.math.cos
@@ -775,6 +778,7 @@ fun Modifier.gridBackground(
 
 @Composable
 fun UserSections() {
+    val navController = LocalNavController.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -799,7 +803,10 @@ fun UserSections() {
                 QuickAccess(
                     icon = R.drawable.schedule,
                     title = "专业课程",
-                    subTitle = "PROFESSIONAL"
+                    subTitle = "PROFESSIONAL",
+                    onClick = {
+                        navController.navigate(NavRoutes.MajorCoursesPage)
+                    }
                 )
                 QuickAccess(icon = R.drawable.slide, title = "销售课程", subTitle = "SALES")
                 QuickAccess(icon = R.drawable.muscle, title = "专业演练", subTitle = "PRACTICE")

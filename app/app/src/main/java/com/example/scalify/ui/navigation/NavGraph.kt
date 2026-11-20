@@ -14,7 +14,7 @@ fun NavGraph() {
     val navController = LocalNavController.current
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.MajorCoursesPage
+        startDestination = NavRoutes.ProfilePage
     ) {
         composable<NavRoutes.LoginPage> { LoginPageUI() }
         composable<NavRoutes.WorkbenchPage> { WorkbenchPageUI() }

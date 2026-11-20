@@ -32,18 +32,19 @@ import com.example.scalify.ui.uitls.rememberHapticClick
 
 @Composable
 fun QuickAccess(
-    destination: String = "",
     icon: Int,
     title: String,
     subTitle: String,
     hoverColor: Color = Color(0xFF36D2A6),
-    themeColor: Color = Color(0xFF0FB48A)
+    themeColor: Color = Color(0xFF0FB48A),
+    onClick: () -> Unit = {}
 ) {
     val hapticClick = rememberHapticClick()
 
     Button(
         onClick = {
             hapticClick()
+            onClick()
         },
         shape = RectangleShape,
         contentPadding = PaddingValues(22.dp),
