@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>WebRTC 视频预览</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #000; color: #eee; font-family: -apple-system, Segoe UI, sans-serif; }
+  .wrap { max-width: 960px; margin: 20px auto; padding: 20px; }
+  h1 { font-size: 18px; margin: 0 0 12px; }
+  video { width: 100%; height: auto; background: #111; border-radius: 6px; display: block; }
+  #log { font-family: monospace; font-size: 12px; background: #1a1a1a; color: #9f9;
+         padding: 10px; height: 200px; overflow-y: auto; margin-top: 12px; border-radius: 4px; }
+  .status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+  .ok { background: #2e7d32; color: #fff; }
+  .err { background: #c62828; color: #fff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>WebRTC 视频预览 <span id="status" class="status err">未连接</span></h1>
+  <video id="video" autoplay playsinline muted></video>
+  <div id="log"></div>
+</div>
+
+<script>
+const logEl = document.getElementById('log');
+const statusEl = document.getElementById('status');
+const video = document.getElementById('video');
+
+function log(msg) {
+  const t = new Date().toISOString().slice(11, 23);
+  logEl.textContent += `[${t}] ${msg}\n`;
+  logEl.scrollTop = logEl.scrollHeight;
+}
+function setStatus(ok, text) {
+  statusEl.className = 'status ' + (ok ? 'ok' : 'err');
+  statusEl.textContent = text;
+}
+
+let pc = null;
+let ws = null;
+const _iceSeen = new Set();
+
+async function connect() {
+  ws = new WebSocket(`ws://${location.host}/ws/rtc`);
+  ws.onopen = async () => {
+    log('WebSocket 已连接');
+    setStatus(true, '信令就绪');
+
+    pc = new RTCPeerConnection({ iceServers: [] });
+    pc.ontrack = (e) => {
+      log('收到 track kind=' + e.track.kind);
+      video.srcObject = e.streams[0];
+      video.play().catch(() => {});
+      setStatus(true, '推流中');
+    };
+    pc.onicecandidate = (e) => {
+      if (e.candidate && e.candidate.candidate) {
+        ws.send(JSON.stringify({
+          type: 'ice',
+          candidate: e.candidate.candidate,
+          sdpMid: e.candidate.sdpMid,
+          sdpMLineIndex: e.candidate.sdpMLineIndex,
+        }));
+      }
+    };
+
+    // 声明要接收 video —— 否则 offer SDP 没有 m=video section + a=ice-ufrag，后端无法协商
+    pc.addTransceiver('video', { direction: 'recvonly' });
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    ws.send(JSON.stringify({ type: 'offer', sdp: pc.localDescription.sdp }));
+    log('发送 offer len=' + pc.localDescription.sdp.length);
+  };
+
+  ws.onmessage = async (ev) => {
+    const msg = JSON.parse(ev.data);
+    log('收到消息 type=' + msg.type);
+    if (msg.type === 'answer') {
+      await pc.setRemoteDescription({ type: 'answer', sdp: msg.sdp });
+      log('answer 设置完成, 等待 ICE 收敛...');
+    } else if (msg.type === 'ice') {
+      // 空 candidate 字符串视作 end-of-candidates 或无意义，跳过
+      if (!msg.candidate || !msg.candidate.startsWith('candidate:')) {
+        log('跳过无效 ICE candidate: ' + JSON.stringify(msg).slice(0, 80));
+        return;
+      }
+      // webrtc 0.20 to_json() 可能给空 sdpMid —— 从 transceiver 兜底
+      const mid = msg.sdpMid || (pc.getTransceivers()[0] && pc.getTransceivers()[0].mid);
+      const mline = msg.sdpMLineIndex ?? 0;
+      const key = msg.candidate + '|' + (mid || '') + '|' + mline;
+      if (_iceSeen.has(key)) { log('跳过重复 ICE candidate'); return; }
+      _iceSeen.add(key);
+      try {
+        await pc.addIceCandidate({ candidate: msg.candidate, sdpMid: mid, sdpMLineIndex: mline });
+        log('ICE added: mid=' + mid + ' cand=' + msg.candidate.split(' ')[4] + ':' + msg.candidate.split(' ')[5]);
+      } catch (e) {
+        log('addIceCandidate 失败 (可忽略): ' + e.message);
+      }
+    }
+  };
+
+  ws.onclose = () => {
+    log('WebSocket 已关闭');
+    setStatus(false, '已断开');
+    if (pc) { pc.close(); pc = null; }
+  };
+  ws.onerror = (e) => {
+    log('WebSocket error: ' + e);
+    setStatus(false, 'WebSocket 错误');
+  };
+}
+
+connect().catch((e) => { log('connect 失败: ' + e); setStatus(false, '连接失败'); });
+</script>
+</body>
+</html>

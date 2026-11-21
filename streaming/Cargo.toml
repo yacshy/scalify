@@ -13,32 +13,33 @@
 name = "scalp-control"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.75"
 description = "Control-plane service for the scalp-camera low-latency preview (no media-plane code)"
 
 [dependencies]
-# 异步运行时（full 覆盖 net/rt-multi-thread/signal/fs/process/time/macros/sync）
-tokio = { version = "=1.41.1", features = ["full"] }
-# HTTP 路由（控制面唯一对外通道 /api/v1/*）
-axum = "=0.7.9"
-# 序列化：统一 {code,data,message}、feedback snake_case、status/config camelCase
-serde = { version = "=1.0.215", features = ["derive"] }
-serde_json = "=1.0.133"
-# 参数化配置。
-# 【版本说明 · 2026-11-20 实机 cargo check 验证】原锁 =0.8.19 会与传递依赖
-# toml_edit 0.22.27 冲突：toml_edit 把 SerializeValueArray::serialize_field/end
-# 从 inherent 方法改为 trait-only，而 toml 0.8.19 的 ser.rs 未 import
-# SerializeTupleStruct trait → 4 个 E0599（toml 0.8.15/0.8.19 均有此已知问题）。
-# 精确锁直接依赖无法约束传递依赖漂移，故升到 0.8 系列最新补丁 0.8.23，
-# 并随仓库提交 Cargo.lock 固定整棵依赖树（详见 README §3/§10）。
-toml = "=0.8.23"
-# 结构化日志（stdout 走 tracing，JSONL 落盘由 logging.rs 自己写）
-tracing = "=0.1.41"
-tracing-subscriber = { version = "=0.3.18", features = ["fmt", "env-filter", "json"] }
-# server_unix_ms / JSONL ts
-chrono = { version = "=0.4.38", default-features = false, features = ["clock"] }
-# pipeline run_id / 内部事件 sample_id
-uuid = { version = "=1.11.0", features = ["v4"] }
-# mediamtx Control API 探流（纯 http://127.0.0.1:9997，禁用默认 TLS 以做到
-# 「零系统库依赖」——Win11 与 ubuntu-server 都能 cargo build，不需要 OpenSSL）
-reqwest = { version = "=0.12.9", default-features = false, features = ["json"] }
+# 异步运行时
+tokio = { version = "1.54", features = ["full"] }
+# HTTP 路由
+axum = { version = "0.7", features = ["ws"] }
+# 序列化
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# 参数化配置
+toml = "0.8"
+# 结构化日志
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter", "json"] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+uuid = { version = "1", features = ["v4"] }
+reqwest = { version = "0.12", default-features = false, features = ["json"] }
+# WebRTC 推流（2026-11-21 新增）
+libc = "0.2"
+rusty_h264-encoder = "0.17"
+anyhow = "1.0.104"
+jpeg-decoder = "0.3.2"
+async-trait = "0.1.92"
+rusty_h264-common = "0.17.3"
+webrtc = "0.20"
+rtc = "0.20"
+rtc-media = "0.20"
+rtc-shared = "0.20"
+futures = "0.3"
