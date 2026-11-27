@@ -1,7 +1,11 @@
-use std::collections::HashMap;
+use std::env;
 
 fn main() {
-  let mut new_map = HashMap::new();
-
-  new_map.insert("str1", 100);
+  let env_var: String = match env::var("Flutter") {
+    Ok(var) => var,
+    Err(e) => {
+      panic!("can not find WebStorm env var");
+    }
+  };
+  println!("{}", env_var);
 }

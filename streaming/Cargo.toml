@@ -1,45 +1,7 @@
-# scalp-control — 头皮检测仪低延迟预览 · Rust 控制面服务
-#
-# 职责边界（用户 Q3 / docs/streaming-plan.md R3）：Rust 只做控制面。
-#   - 不监听 8889 / 8189 / 8554 / 9997，不接触任何帧 / RTP / H.264 数据；
-#   - 不实现 WebRTC、不改码流、不做 RTSP→WebRTC 重封装（那是 mediamtx 的事）；
-#   - 只管：设备状态机、配置、会话、结构化日志、看门狗、统计反馈，
-#     以及通过 mediamtx Control API 探流、通过子进程「编排」GStreamer 的启停。
-#
-# 依赖策略：全部直接依赖用 `=` 精确锁版本，禁用 `*`/latest 通配（决策：依赖求稳）。
-# edition 2021；rust-version(MSRV) = 1.75。
-
 [package]
-name = "scalp-control"
+name = "scalify"
 version = "0.1.0"
 edition = "2021"
-description = "Control-plane service for the scalp-camera low-latency preview (no media-plane code)"
+description = "this is a project that providing low delay video tream for frontend preview"
 
 [dependencies]
-# 异步运行时
-tokio = { version = "1.54", features = ["full"] }
-# HTTP 路由
-axum = { version = "0.7", features = ["ws"] }
-# 序列化
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-# 参数化配置
-toml = "0.8"
-# 结构化日志
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter", "json"] }
-chrono = { version = "0.4", default-features = false, features = ["clock"] }
-uuid = { version = "1", features = ["v4"] }
-reqwest = { version = "0.12", default-features = false, features = ["json"] }
-# WebRTC 推流（2026-11-21 新增）
-libc = "0.2"
-rusty_h264-encoder = "0.17"
-anyhow = "1.0.104"
-jpeg-decoder = "0.3.2"
-async-trait = "0.1.92"
-rusty_h264-common = "0.17.3"
-webrtc = "0.20"
-rtc = "0.20"
-rtc-media = "0.20"
-rtc-shared = "0.20"
-futures = "0.3"
